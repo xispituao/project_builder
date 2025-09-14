@@ -1,0 +1,78 @@
+# Version control
+.git/
+.gitignore
+.gitattributes
+.github/
+.gitlab-ci.yml
+
+# Environment files
+.env
+.env.*
+!.env.sample
+
+# Docker files
+Dockerfile
+.dockerignore*
+docker-compose.yml
+docker-compose.*.yml
+docker-compose.override.yml
+
+# Logs e temporários
+log/
+tmp/
+*.log
+*.tmp
+*.pid
+
+# Assets (ignorar todos)
+public/assets/
+public/packs/
+public/packs-test/
+node_modules/
+yarn-error.log
+
+# Testes (ignorar em produção)
+spec/
+test/
+features/
+coverage/
+
+# Documentação (ignorar em produção)
+docs/
+*.md
+CHANGELOG
+LICENSE
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.projections.json
+.ropeproject
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Ruby specific
+.bundle/
+vendor/bundle/
+*.gem
+
+# Node specific
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.lock-wscript
+
+# Keep files
+!log/.keep
+!tmp/.keep
+!vendor/.keep
+!public/assets/.keep
+
+# Project specific
+tasks
