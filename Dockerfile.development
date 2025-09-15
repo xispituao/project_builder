@@ -35,7 +35,6 @@ RUN gem install rails -v 8.0.1 && \
 
 # Copia todos os arquivos de uma vez
 COPY --chown=avantsoft:avantsoft . .
-RUN chmod +x scripts/*.sh
 
 # Entrypoint
 ENTRYPOINT ["./entrypoint.sh"]

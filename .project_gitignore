@@ -1,0 +1,149 @@
+# Rails + Docker + PostgreSQL - Project Gitignore
+# See https://help.github.com/articles/ignoring-files for more about ignoring files.
+
+# ===========================================
+# RAILS SPECIFIC
+# ===========================================
+
+# Ignore bundler config
+/.bundle
+/vendor/bundle
+
+# Ignore all logfiles and tempfiles
+/log/*
+/tmp/*
+!/log/.keep
+!/tmp/.keep
+
+# Ignore pidfiles, but keep the directory
+/tmp/pids/*
+!/tmp/pids/
+!/tmp/pids/.keep
+
+# Ignore storage (uploaded files in development)
+/storage/*
+!/storage/.keep
+/tmp/storage/*
+!/tmp/storage/
+!/tmp/storage/.keep
+
+# Ignore public assets
+/public/assets
+/public/packs
+/public/packs-test
+/node_modules
+
+# Ignore master key for decrypting credentials
+/config/master.key
+
+# Ignore database files (PostgreSQL)
+*.sqlite3
+*.sqlite3-journal
+
+# ===========================================
+# DOCKER SPECIFIC
+# ===========================================
+
+# Docker volumes and data
+/docker-data/
+/postgres-data/
+/redis-data/
+
+# Docker override files
+docker-compose.override.yml
+.dockerignore.local
+
+# ===========================================
+# ENVIRONMENT & CONFIG
+# ===========================================
+
+# Environment files (keep .env.sample)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.env.staging
+
+# ===========================================
+# DEVELOPMENT & TESTING
+# ===========================================
+
+# Coverage reports
+/coverage/
+.nyc_output/
+
+# RSpec
+.rspec_status
+
+# Test databases
+/test.sqlite3
+/test.sqlite3-journal
+
+# Capybara screenshots
+/tmp/capybara/
+
+# Spring
+/spring/*.pid
+
+# Byebug
+.byebug_history
+
+# Minitest
+/minitest-report.xml
+
+# SimpleCov (coverage already ignored above)
+
+# Test artifacts
+/test-reports/
+/spec/reports/
+
+# Cucumber
+/cucumber.log
+
+# FactoryBot
+/factory_bot_sequences.rb
+
+# Test fixtures
+/test/fixtures/files/
+
+# Performance testing
+/benchmark_results/
+
+# ===========================================
+# ASSETS & COMPILATION
+# ===========================================
+
+# Yarn
+yarn-error.log
+.yarn-integrity
+
+# Webpacker
+/public/packs-test/
+
+# ===========================================
+# IDE & EDITORS
+# ===========================================
+
+# VSCode (ignore user-specific settings)
+.vscode/settings.json
+
+# RubyMine
+.idea/
+
+# ===========================================
+# OS SPECIFIC
+# ===========================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
