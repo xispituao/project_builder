@@ -1,0 +1,45 @@
+# Dockerfile otimizado para staging
+FROM ruby:3.4.2-slim
+
+# Instala dependências essenciais para runtime
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
+    libpq-dev \
+    libyaml-dev \
+    git \
+    curl \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Cria usuário não-root
+RUN groupadd -r -g 1000 avantsoft && \
+    useradd -r -u 1000 -g avantsoft -m avantsoft
+
+# Configura diretórios e permissões (como root)
+RUN mkdir -p /avantsoft_app /usr/local/bundle && \
+    chown -R avantsoft:avantsoft /avantsoft_app /usr/local/bundle
+
+# Configura variáveis de ambiente
+ENV GEM_HOME=/usr/local/bundle
+
+# Muda para usuário não-root
+USER avantsoft
+
+WORKDIR /avantsoft_app
+
+# Instala Rails e Bundler primeiro (melhor cache)
+RUN gem install rails -v 8.0.1 && \
+    gem install bundler -v 2.5.6
+
+# Copia Gemfile primeiro para otimizar cache
+COPY --chown=avantsoft:avantsoft Gemfile ./
+RUN bundle install --jobs=$(nproc) --retry=3
+
+# Copia todos os arquivos de uma vez
+COPY --chown=avantsoft:avantsoft . .
+RUN chmod +x scripts/*.sh
+
+# Entrypoint
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["sh", "-c", "rails server -b 0.0.0.0 -p ${RAILS_INTERNAL_PORT:-3000}"]

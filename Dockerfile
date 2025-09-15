@@ -1,88 +1,69 @@
-# Stage 1: Builder stage (para desenvolvimento e construção)
-FROM ruby:3.4.2-slim AS builder
+# syntax=docker/dockerfile:1
+# check=error=true
 
-# Instala dependências de build de forma segura
+# This Dockerfile is designed for production, not development. Use with Kamal or build'n'run by hand:
+# docker build -t avantsoft_app .
+# docker run -d -p 80:80 -e RAILS_MASTER_KEY=<value from config/master.key> --name avantsoft_app avantsoft_app
+
+# For a containerized dev environment, see Dev Containers: https://guides.rubyonrails.org/getting_started_with_devcontainer.html
+
+# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
+ARG RUBY_VERSION=3.4.2
+FROM docker.io/library/ruby:$RUBY_VERSION-slim AS base
+
+# Rails app lives here
+WORKDIR /rails
+
+# Install base packages
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    build-essential \
-    postgresql-client \
-    libpq-dev \
-    curl \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs=20.17.0-1nodesource1 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/*
+    apt-get install --no-install-recommends -y curl libjemalloc2 libvips postgresql-client && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Cria usuário e grupo não-root com UID/GID fixo para consistência
-RUN groupadd -r -g 1000 avantsoft && \
-    useradd -r -u 1000 -g avantsoft avantsoft
+# Set production environment
+ENV RAILS_ENV="production" \
+    BUNDLE_DEPLOYMENT="1" \
+    BUNDLE_PATH="/usr/local/bundle" \
+    BUNDLE_WITHOUT="development"
 
-# Cria diretório de trabalho com permissões corretas
-RUN mkdir -p /avantsoft_app && \
-    chown avantsoft:avantsoft /avantsoft_app
+# Throw-away build stage to reduce size of final image
+FROM base AS build
 
-WORKDIR /avantsoft_app
-
-# Configura variáveis de ambiente
-ENV GEM_HOME=/usr/local/bundle
-
-# Configura permissões seguras para bundle
-RUN mkdir -p $GEM_HOME && \
-    chown avantsoft:avantsoft $GEM_HOME && \
-    chmod 1777 $GEM_HOME
-
-USER avantsoft
-
-# Instala Rails e dependências
-RUN gem install rails -v 8.0.1 && \
-    gem install bundler -v 2.5.6
-
-# Stage 2: Runtime stage (leve para produção/staging)
-FROM ruby:3.4.2-slim AS runtime
-
-# Instala apenas dependências essenciais de runtime
+# Install packages needed to build gems
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends \
-    postgresql-client \
-    curl \
-    tzdata \
-    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs=20.17.0-1nodesource1 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/* /usr/share/man/*
+    apt-get install --no-install-recommends -y build-essential git libpq-dev libyaml-dev pkg-config && \
+    rm -rf /var/lib/apt/lists /var/cache/apt/archives
 
-# Cria usuário e grupo com mesmo UID/GID do builder
-RUN groupadd -r -g 1000 avantsoft && \
-    useradd -r -u 1000 -g avantsoft avantsoft
+# Install application gems
+COPY Gemfile Gemfile.lock ./
+RUN bundle install && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    bundle exec bootsnap precompile --gemfile
 
-# Cria diretório de trabalho
-RUN mkdir -p /avantsoft_app && \
-    chown avantsoft:avantsoft /avantsoft_app
+# Copy application code
+COPY . .
 
-WORKDIR /avantsoft_app
+# Precompile bootsnap code for faster boot times
+RUN bundle exec bootsnap precompile app/ lib/
 
-# Configura variáveis de ambiente
-ENV BUNDLE_PATH=/usr/local/bundle \
-    BUNDLE_APP_CONFIG=/avantsoft_app/.bundle \
-    GEM_HOME=/usr/local/bundle \
-    PATH=/avantsoft_app/bin:/usr/local/bundle/bin:$PATH
 
-# Configura permissões seguras
-RUN mkdir -p $GEM_HOME && \
-    chown avantsoft:avantsoft $GEM_HOME && \
-    chmod 1777 $GEM_HOME
 
-USER avantsoft
 
-# Copia apenas as gems do builder (camada otimizada)
-COPY --from=builder --chown=avantsoft:avantsoft /usr/local/bundle /usr/local/bundle
+# Final stage for app image
+FROM base
 
-# Expõe porta
-EXPOSE 3000
+# Copy built artifacts: gems, application
+COPY --from=build "${BUNDLE_PATH}" "${BUNDLE_PATH}"
+COPY --from=build /rails /rails
 
-# Entrypoint para configurações finais
-COPY --chown=avantsoft:avantsoft entrypoint.sh /usr/local/bin/
-RUN chmod +x /usr/local/bin/entrypoint.sh
+# Run and own only the runtime files as a non-root user for security
+RUN groupadd --system --gid 1000 rails && \
+    useradd rails --uid 1000 --gid 1000 --create-home --shell /bin/bash && \
+    chown -R rails:rails db log storage tmp
+USER 1000:1000
 
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
-CMD ["rails", "server", "-b", "0.0.0.0", "-p", "3000"]
+# Entrypoint prepares the database.
+ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+
+# Start server via Thruster by default, this can be overwritten at runtime
+EXPOSE 80
+CMD ["./bin/thrust", "./bin/rails", "server"]
