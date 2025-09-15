@@ -24,7 +24,7 @@ Um template completo e **testado** para criar projetos Rails modernos com Docker
 
 > 💡 **Windows**: Funciona nativamente com Docker Desktop. WSL2 é opcional mas recomendado para melhor performance.
 > 
-> ✅ **Testado em**: Windows 10 com WSL2
+> ✅ **Testado em**: Windows 10 com WSL2 usando a dist Ubuntu
 
 ### 🚀 Criando um novo projeto Rails
 
@@ -84,13 +84,13 @@ make build-prod PROJECT_NAME=meu_projeto_production
 ### Para criar um novo projeto Rails:
 
 1. **Clone este repositório** como template
-2. **Renomeie a pasta** para o nome do seu projeto
-3. **Execute `make dev`** - O sistema criará automaticamente:
-   - Nova aplicação Rails
-   - Configuração do PostgreSQL
-   - Estrutura Docker completa
-   - Variáveis de ambiente
-4. **Comece a desenvolver** - Tudo estará pronto!
+2. **Execute `make build PROJECT_NAME=meu_projeto`**  
+   - Isso irá criar uma nova pasta chamada `meu_projeto` na raiz, e dentro dela será gerada uma nova aplicação Rails já configurada.
+3. **Acesse a nova pasta do projeto**  
+   - `cd meu_projeto`
+4. **Inicie o ambiente de desenvolvimento**  
+   - `make dev`
+5. **Comece a desenvolver** - Tudo estará pronto!
 
 ### Personalização:
 
