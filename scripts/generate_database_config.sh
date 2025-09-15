@@ -22,9 +22,15 @@ echo "📝 Copiando template para database.yml..."
 cp config/database.yml.template config/database.yml
 
 echo "✅ Configuração do banco gerada com sucesso!"
-echo "📋 Variáveis de ambiente configuradas:"
-echo "   - POSTGRES_DB: ${POSTGRES_DB:-avantsoft_app_development}"
-echo "   - POSTGRES_USER: ${POSTGRES_USER:-avantsoft}"
-echo "   - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}"
-echo "   - DB_HOST: ${DB_HOST:-db}"
-echo "   - DB_INTERNAL_PORT: ${DB_INTERNAL_PORT:-5432}"
+
+# Mostra informações detalhadas apenas em desenvolvimento
+if [ "$RAILS_ENV" = "development" ]; then
+  echo "📋 Variáveis de ambiente configuradas:"
+  echo "   - POSTGRES_DB: ${POSTGRES_DB:-avantsoft_app_development}"
+  echo "   - POSTGRES_USER: ${POSTGRES_USER:-avantsoft}"
+  echo "   - POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}"
+  echo "   - DB_HOST: ${DB_HOST:-db}"
+  echo "   - DB_INTERNAL_PORT: ${DB_INTERNAL_PORT:-5432}"
+else
+  echo "📋 Configuração do banco aplicada com sucesso"
+fi

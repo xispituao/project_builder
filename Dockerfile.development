@@ -33,10 +33,6 @@ WORKDIR /avantsoft_app
 RUN gem install rails -v 8.0.1 && \
     gem install bundler -v 2.5.6
 
-# Copia Gemfile primeiro para otimizar cache
-COPY --chown=avantsoft:avantsoft Gemfile ./
-RUN bundle install --jobs=$(nproc) --retry=3
-
 # Copia todos os arquivos de uma vez
 COPY --chown=avantsoft:avantsoft . .
 RUN chmod +x scripts/*.sh

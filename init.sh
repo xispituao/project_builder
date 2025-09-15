@@ -10,21 +10,22 @@ if [ "$ENVIRONMENT" = "development" ]; then
 	ENV_FILE=".env.development"
 	COMPOSE_CMD="docker compose -f docker-compose.development.yml --env-file $ENV_FILE"
 	
-	# Cria arquivo .env se não existir
+	# Verifica se .env.sample existe
+	if [ ! -f ".env.sample" ]; then
+		echo "❌ Arquivo .env.sample não encontrado!"
+		echo "💡 Crie um arquivo .env.sample com as variáveis necessárias."
+		exit 1
+	fi
+	
+	# Cria .env.development apenas se não existir
 	if [ ! -f "$ENV_FILE" ]; then
-		echo "⚠️  Arquivo $ENV_FILE não encontrado!"
-		echo "📝 Criando arquivo básico de desenvolvimento..."
-		cat > "$ENV_FILE" <<- 'EOF'
-			RAILS_PORT=3000
-			DB_HOST=db
-			DB_PORT=5435
-			POSTGRES_PASSWORD=password
-			POSTGRES_USER=avantsoft
-			POSTGRES_DB=avantsoft_app_development
-		EOF
-		echo "✅ Arquivo $ENV_FILE criado com configurações padrão."
+		echo "📝 Criando $ENV_FILE a partir do .env.sample..."
+		cp .env.sample "$ENV_FILE"
+		echo "✅ Arquivo $ENV_FILE criado com configurações do sample."
 		echo "🔧 Edite o arquivo conforme necessário antes de continuar."
 		exit 1
+	else
+		echo "✅ Arquivo $ENV_FILE já existe, usando configurações existentes."
 	fi
 else
 	COMPOSE_CMD="docker compose -f docker-compose.$ENVIRONMENT.yml"
