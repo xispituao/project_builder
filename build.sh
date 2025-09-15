@@ -51,12 +51,12 @@ mkdir -p $PROJECT_NAME
 echo "📁 Copiando os arquivos necessários para dentro da pasta do projeto"
 shopt -s extglob  # Ativa padrões estendidos para nomes de arquivos
 
-# Loop através de todos os arquivos do template
-for file in ./*; do
+# Loop através de todos os arquivos do template (incluindo arquivos ocultos)
+for file in ./* ./.*; do
   basefile=$(basename "$file")
   
   # Ignora arquivos que não devem ser copiados para o projeto
-  if [[ "$basefile" == ".gitignore" || "$basefile" == "makefile" || "$basefile" == "README.md" || "$basefile" == "build.sh" || "$basefile" == "$PROJECT_NAME" ]]; then
+  if [[ "$basefile" == ".gitignore" || "$basefile" == "makefile" || "$basefile" == "README.md" || "$basefile" == "build.sh" || "$basefile" == "$PROJECT_NAME" || "$basefile" == "." || "$basefile" == ".." ]]; then
     continue
   fi
 
@@ -142,6 +142,19 @@ for file in ./*; do
 done
 
 echo "✅ Arquivos pré-definidos copiados com sucesso"
+
+# =============================================================================
+# FINALIZAÇÃO - DERRUBAR CONTAINERS
+# =============================================================================
+
+echo "🛑 Derrubando containers após build..."
+cd $PROJECT_NAME
+
+# Derruba os containers (reutiliza variáveis já configuradas)
+$COMPOSE_CMD down
+echo "✅ Containers derrubados com sucesso"
+
+cd ..  # Volta para o diretório do template
 
 # =============================================================================
 # FINALIZAÇÃO
