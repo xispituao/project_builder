@@ -38,33 +38,56 @@ echo "✅ PostgreSQL já está pronto (garantido pelo depends_on)"
 # Condição: NÃO tem Gemfile OU NÃO tem pasta app OU NÃO tem config/application.rb
 if [ ! -f Gemfile ] || [ ! -d app ] || [ ! -f config/application.rb ]; then
   echo "📦 Inicializando aplicação Rails..."
-  
-  # Preserva .dockerignore e .dockerignore.runtime existentes
+
   if [ -f .dockerignore ]; then
     echo "📄 Preservando .dockerignore existente..."
     cp .dockerignore .dockerignore.backup
+  fi
+  
+  # Preserva .dockerignore e .dockerignore.runtime existentes
+  if [ -f .dockerignore.development ]; then
+    echo "📄 Preservando .dockerignore.development existente..."
+    cp .dockerignore.development .dockerignore.development.backup
   fi
   
   if [ -f .dockerignore.runtime ]; then
     echo "📄 Preservando .dockerignore.runtime existente..."
     cp .dockerignore.runtime .dockerignore.runtime.backup
   fi
-  
-  # Cria nova aplicação Rails
-  # --api: Aplicação API-only (sem views)
-  # --database=postgresql: Configura PostgreSQL
-  # --skip-bundle: Não executa bundle install (faremos depois)
-  # --force: Sobrescreve arquivos existentes
+
+  if [ -f .gitignore ]; then
+    echo "📄 Preservando .gitignore existente..."
+    cp .gitignore .gitignore.backup
+  fi
+
   rails new . --api --database=postgresql --skip-bundle --force
-  
+
+  if [ -f ".dockerignore" ]; then
+    echo "🧹 Removendo .dockerignore padrão..."
+    rm -f .dockerignore
+  fi
+
   if [ -f .dockerignore.backup ]; then
     echo "📄 Restaurando .dockerignore original..."
     mv .dockerignore.backup .dockerignore
   fi
   
+  if [ -f .dockerignore.development.backup ]; then
+    echo "📄 Restaurando .dockerignore.development original..."
+    mv .dockerignore.development.backup .dockerignore.development
+  fi
+  
   if [ -f .dockerignore.runtime.backup ]; then
     echo "📄 Restaurando .dockerignore.runtime original..."
     mv .dockerignore.runtime.backup .dockerignore.runtime
+  fi
+  
+  if [ -f .gitignore.backup ]; then
+    echo "📄 Restaurando .gitignore original..."
+    mv -f .gitignore.backup .gitignore
+  elif [ -f .project_gitignore ]; then
+    echo "📄 Usando .project_gitignore como .gitignore..."
+    cp -f .project_gitignore .gitignore
   fi
   
   # Gera configuração do banco
@@ -79,10 +102,56 @@ if [ ! -f Gemfile ] || [ ! -d app ] || [ ! -f config/application.rb ]; then
     echo "🧹 Removendo Dockerfile padrão..."
     rm -f Dockerfile
   fi
+
+  if [ -f .env ]; then
+    echo "🧹 Removendo .env padrão..."
+    rm -f .env
+  fi
 fi
 
-echo "📦 Instalando dependências..."
-bundle install
+# =============================================================================
+# VERIFICAÇÃO DE DEPENDÊNCIAS
+# =============================================================================
+
+echo "📦 Verificando dependências..."
+if [ -f Gemfile ]; then
+  # Verifica se as dependências já estão instaladas
+  # Usa bundle check com --path para verificar se as gems estão no local correto
+  if bundle check --path=/usr/local/bundle > /dev/null 2>&1; then
+    echo "✅ Dependências já instaladas (cache aproveitado)"
+  else
+    echo "📦 Instalando dependências do Rails..."
+    
+    # Configura bundle baseado no ambiente
+    if [ "$RAILS_ENV" = "production" ]; then
+      echo "📦 Configurando bundle para produção..."
+      bundle config set --local deployment 'true'
+      bundle config set --local without 'development test'
+      bundle install --jobs 4 --retry 3 --without development test
+    elif [ "$RAILS_ENV" = "staging" ]; then
+      echo "📦 Configurando bundle para staging..."
+      bundle config set --local deployment 'true'
+      bundle config set --local without 'development'
+      bundle install --jobs 4 --retry 3 --without development
+    else
+      echo "📦 Configurando bundle para desenvolvimento..."
+      bundle config set --local deployment 'false'
+      bundle config set --local without ''
+      bundle install --jobs 4 --retry 3
+    fi
+    
+    echo "✅ Dependências instaladas com sucesso!"
+  fi
+  
+  # Precompila assets para produção e staging
+  if [ "$RAILS_ENV" = "production" ] || [ "$RAILS_ENV" = "staging" ]; then
+    echo "🎨 Precompilando assets para $RAILS_ENV..."
+    bundle exec rails assets:precompile RAILS_ENV=$RAILS_ENV
+    echo "✅ Assets precompilados com sucesso!"
+  fi
+else
+  echo "⚠️ Gemfile não encontrado, pulando instalação de dependências"
+fi
 
 echo "🗄️ Verificando se o banco de dados já existe..."
 if bundle exec rails db:version > /dev/null 2>&1; then

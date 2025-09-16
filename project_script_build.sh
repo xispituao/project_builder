@@ -43,13 +43,14 @@ echo "🚀 Iniciando build para ambiente: $ENVIRONMENT"
 # =============================================================================
 
 # Configura .dockerignore baseado no ambiente
-# Development: usa .dockerignore padrão (inclui arquivos de desenvolvimento)
+# Development: usa .dockerignore.development (otimizado para desenvolvimento)
 # Staging/Production: usa .dockerignore.runtime (otimizado para produção)
 if [ "$ENVIRONMENT" != "development" ]; then
   echo "📝 Usando .dockerignore.runtime para $ENVIRONMENT"
-  cp .dockerignore.runtime .dockerignore
+  cp -f .dockerignore.runtime .dockerignore
 else
-  echo "📝 Usando .dockerignore padrão para desenvolvimento"
+  echo "📝 Usando .dockerignore.development para desenvolvimento"
+  cp -f .dockerignore.development .dockerignore
 fi
 
 echo "✅ .dockerignore configurado para $ENVIRONMENT"

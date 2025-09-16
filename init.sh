@@ -45,6 +45,11 @@ if [ "$ENVIRONMENT" = "development" ]; then
   else
     echo "✅ Arquivo $ENV_FILE já existe, usando configurações existentes."
   fi
+
+  if [ ! -f .dockerignore ]; then
+    echo "📝 Usando .dockerignore.development para desenvolvimento"
+    cp .dockerignore.development .dockerignore
+  fi
 else
   # Staging/Production: usa variáveis de ambiente do sistema
   COMPOSE_CMD="docker compose -f docker-compose.$ENVIRONMENT.yml"
@@ -58,6 +63,11 @@ else
       exit 1
     fi
   done
+
+  if [ ! -f ".dockerignore" ]; then
+    echo "📝 Usando .dockerignore.runtime para $ENVIRONMENT"
+    cp .dockerignore.runtime .dockerignore
+  fi
 fi
 
 # =============================================================================

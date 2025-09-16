@@ -64,7 +64,7 @@ for file in ./* ./.*; do
   if [[ "$basefile" == project_script* ]]; then
     newname="${basefile#project_script_}"  # Remove prefixo "project_script_"
     cp -r "$file" "$PROJECT_NAME/$newname"
-  else
+  elif [[ "$basefile" != ".project_*" ]]; then
     # Outros arquivos são copiados com o nome original
     cp -r "$file" "$PROJECT_NAME/"
   fi
@@ -137,7 +137,10 @@ for file in ./*; do
 
   if [[ "$basefile" == project_* && "$basefile" != project_script_* ]]; then
     newname="${basefile#project_}"  # Remove prefixo "project_"
-    cp -rf "$file" "$PROJECT_NAME/$newname"  # Sobrescreve arquivo padrão
+    # Cria o arquivo se não existir
+    if [ ! -e "$PROJECT_NAME/$newname" ]; then
+      cp -rf "$file" "$PROJECT_NAME/$newname"
+    fi
   fi
 done
 

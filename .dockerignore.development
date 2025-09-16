@@ -1,0 +1,91 @@
+# =============================================================================
+# .dockerignore.development - Otimizado para Desenvolvimento
+# =============================================================================
+# Este arquivo é usado durante o desenvolvimento para manter arquivos úteis
+# para debugging, testes e documentação dentro do container.
+# =============================================================================
+
+# Version control
+.git/
+.gitignore
+.gitattributes
+.github/
+.gitlab-ci.yml
+
+# Environment files (manter .env.sample para referência)
+.env
+.env.*
+!.env.sample
+
+# Docker files
+Dockerfile*
+.dockerignore*
+docker-compose*.yml
+docker-compose.override.yml
+
+# Logs e temporários (ignorar conteúdo, manter estrutura)
+log/*.log
+tmp/cache/
+tmp/pids/
+tmp/sessions/
+tmp/sockets/
+tmp/restart.txt
+*.tmp
+*.pid
+
+# Assets compilados (ignorar apenas os compilados)
+public/assets/
+public/packs/
+public/packs-test/
+node_modules/
+yarn-error.log
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+.projections.json
+.ropeproject
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# Ruby specific (ignorar gems instaladas, mas manter Gemfile)
+.bundle/
+vendor/bundle/
+*.gem
+
+# Node specific
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.lock-wscript
+
+# Keep files (manter estrutura de diretórios)
+!log/.keep
+!tmp/.keep
+!vendor/.keep
+!public/assets/.keep
+
+# Project specific (ignorar pasta de tasks do template)
+tasks/
+
+# =============================================================================
+# ARQUIVOS MANTIDOS PARA DESENVOLVIMENTO:
+# =============================================================================
+# - spec/ (testes RSpec)
+# - test/ (testes Rails)  
+# - features/ (testes Cucumber)
+# - coverage/ (relatórios de cobertura)
+# - docs/ (documentação)
+# - *.md (README, CHANGELOG, etc.)
+# - LICENSE
+# - Arquivos de configuração de desenvolvimento
+# - Scripts de build e desenvolvimento
+# - Gemfile.lock (para consistência de dependências)
+# - package-lock.json / yarn.lock (para consistência de dependências)
+# =============================================================================
