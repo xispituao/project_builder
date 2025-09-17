@@ -1,27 +1,14 @@
-# Ignorar todos os arquivos exceto os essenciais
+# Ignorar todos os arquivos exceto os presentes no diretório (menos pasta tasks)
 
 # Ignorar todos os arquivos por padrão
 *
 
-# Permitir apenas os arquivos essenciais
-!.github/**
+# Permitir apenas os arquivos presentes no diretório
+!project_files/
+!project_files/**
 !.gitignore
-!.env.sample
-!README.md
-!database.yml.template
 !build.sh
-!.project_gitignore
 !entrypoint.sh
 !init.sh
 !makefile
-!project_script_makefile
-!Dockerfile.development
-!Dockerfile.production
-!Dockerfile.staging
-!docker-compose.development.yml
-!docker-compose.production.yml
-!docker-compose.staging.yml
-!.dockerignore.development
-!.dockerignore.runtime
-!generate_database_config.sh
-!project_script_build.sh
+!README.md

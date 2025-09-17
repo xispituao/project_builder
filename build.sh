@@ -25,19 +25,12 @@ if [ -z "$PROJECT_NAME" ]; then
   exit 1
 fi
 
-# Valida se o ambiente é válido
-if [[ "$ENVIRONMENT" != "development" && "$ENVIRONMENT" != "staging" && "$ENVIRONMENT" != "production" ]]; then
-  echo "❌ Erro: Ambiente inválido: $ENVIRONMENT"
-  echo "💡 Ambientes válidos: development, staging, production"
-  exit 1
-fi
-
-echo "🚀 Criando projeto '$PROJECT_NAME' para ambiente: $ENVIRONMENT"
+echo "🚀 Criando projeto '$PROJECT_NAME'..."
 
 # Verifica se a pasta do projeto já existe
 if [ -d "$PROJECT_NAME" ]; then
   echo "❌ Erro: A pasta '$PROJECT_NAME' já existe!"
-  echo "💡 Escolha outro nome ou remova a pasta existente."
+  echo "💡 Escolha outro nome ou apague a pasta existente."
   exit 1
 fi
 
@@ -52,22 +45,10 @@ echo "📁 Copiando os arquivos necessários para dentro da pasta do projeto"
 shopt -s extglob  # Ativa padrões estendidos para nomes de arquivos
 
 # Loop através de todos os arquivos do template (incluindo arquivos ocultos)
-for file in ./* ./.*; do
+for file in ./project_files/* ./project_files/.*; do
   basefile=$(basename "$file")
-  
-  # Ignora arquivos que não devem ser copiados para o projeto
-  if [[ "$basefile" == ".gitignore" || "$basefile" == "makefile" || "$basefile" == "README.md" || "$basefile" == "build.sh" || "$basefile" == "$PROJECT_NAME" || "$basefile" == "." || "$basefile" == ".." ]]; then
-    continue
-  fi
 
-  # Arquivos que começam com "project_script_" são renomeados (removendo o prefixo)
-  if [[ "$basefile" == project_script* ]]; then
-    newname="${basefile#project_script_}"  # Remove prefixo "project_script_"
-    cp -r "$file" "$PROJECT_NAME/$newname"
-  elif [[ "$basefile" != ".project_*" ]]; then
-    # Outros arquivos são copiados com o nome original
-    cp -r "$file" "$PROJECT_NAME/"
-  fi
+  cp -r "$file" "$PROJECT_NAME/"
 done
 
 echo "✅ Arquivos copiados para dentro da pasta do projeto"
@@ -79,8 +60,8 @@ echo "✅ Arquivos copiados para dentro da pasta do projeto"
 echo "🔨 Agora será executado o script de build do projeto"
 cd $PROJECT_NAME
 # Executa o script de build copiado (que era project_script_build.sh)
-# Passa o ambiente e modo --detach --no-logs para execução silenciosa
-./build.sh $ENVIRONMENT --detach --no-logs
+# Passa o ambiente como development e modo --detach --no-logs para execução silenciosa
+./build.sh development --detach --no-logs
 
 echo "✅ Script de build do projeto executado com sucesso"
 
@@ -91,15 +72,7 @@ echo "✅ Script de build do projeto executado com sucesso"
 echo "⏳ Aguardando o container subir e a aplicação Rails ser criada..."
 echo "💡 Isso pode levar alguns minutos na primeira execução..."
 
-# Configura comando docker compose baseado no ambiente
-if [ "$ENVIRONMENT" = "development" ]; then
-  COMPOSE_FILE="docker-compose.development.yml"
-  ENV_FILE=".env.development"
-  COMPOSE_CMD="docker compose -f $COMPOSE_FILE --env-file $ENV_FILE"
-else
-  COMPOSE_FILE="docker-compose.$ENVIRONMENT.yml"
-  COMPOSE_CMD="docker compose -f $COMPOSE_FILE"
-fi
+COMPOSE_CMD="docker compose -f docker-compose.development.yml --env-file .env.development"
 
 # Aguarda o container estar rodando
 echo "🔍 Verificando se o container está rodando..."
@@ -110,48 +83,19 @@ done
 
 echo "✅ Container está rodando!"
 
-# Aguarda a aplicação Rails estar pronta (apenas para development)
-# Em staging/production, não fazemos curl pois pode não ter porta exposta
-if [ "$ENVIRONMENT" = "development" ]; then
-  echo "🔍 Verificando se a aplicação Rails está pronta..."
-  while ! curl -f http://localhost:${RAILS_PORT:-3000} >/dev/null 2>&1; do
-    echo "⏳ Aguardando aplicação Rails ficar pronta..."
-    sleep 10
-  done
-  echo "✅ Aplicação Rails está pronta!"
-else
-  echo "✅ Aplicação Rails iniciada em modo $ENVIRONMENT!"
-fi
-
-# =============================================================================
-# SUBSTITUIÇÃO DE ARQUIVOS PADRÃO
-# =============================================================================
-
-echo "🔄 Substituindo os arquivos padrões pelos pré-definidos"
-cd ..  # Volta para o diretório do template
-
-# Copia arquivos que começam com "project_" (exceto project_script_*)
-# Estes arquivos sobrescrevem configurações padrão do Rails
-for file in ./*; do
-  basefile=$(basename "$file")
-
-  if [[ "$basefile" == project_* && "$basefile" != project_script_* ]]; then
-    newname="${basefile#project_}"  # Remove prefixo "project_"
-    # Cria o arquivo se não existir
-    if [ ! -e "$PROJECT_NAME/$newname" ]; then
-      cp -rf "$file" "$PROJECT_NAME/$newname"
-    fi
-  fi
+# Aguarda a aplicação Rails estar pronta
+echo "🔍 Verificando se a aplicação Rails está pronta..."
+while ! docker logs "${PROJECT_NAME}-app-1" 2>&1 | grep -q "Listening on"; do
+  echo "⏳ Aguardando aplicação Rails ficar pronta..."
+  sleep 10
 done
-
-echo "✅ Arquivos pré-definidos copiados com sucesso"
+echo "✅ Aplicação Rails está pronta!"
 
 # =============================================================================
 # FINALIZAÇÃO - DERRUBAR CONTAINERS
 # =============================================================================
 
 echo "🛑 Derrubando containers após build..."
-cd $PROJECT_NAME
 
 # Derruba os containers (reutiliza variáveis já configuradas)
 $COMPOSE_CMD down

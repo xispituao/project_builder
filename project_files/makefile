@@ -2,7 +2,34 @@
 .DEFAULT_GOAL := dev
 
 # Alvos phony (nao sao arquivos)
-.PHONY: dev dev-interactive prod staging down down-prod down-staging logs logs-prod logs-staging console console-prod console-staging migrate migrate-prod migrate-staging clean clean-prod clean-staging build test test-prod test-staging swagger
+.PHONY: \
+    dev \
+    dev-interactive \
+    prod \
+    staging \
+    down \
+    down-prod \
+    down-staging \
+    logs \
+    logs-prod \
+    logs-staging \
+    console \
+    console-prod \
+    console-staging \
+    migrate \
+    migrate-prod \
+    migrate-staging \
+    clean \
+    clean-prod \
+    clean-staging \
+    build \
+    test \
+    test-prod \
+    test-staging \
+    swagger \
+    bash \
+    bash-prod \
+    bash-staging
 
 dev:
 	./build.sh development
@@ -42,6 +69,15 @@ console-prod:
 
 console-staging:
 	docker compose -f docker-compose.staging.yml exec app rails console
+
+bash:
+	docker compose -f docker-compose.development.yml --env-file .env.development exec app bash
+
+bash-prod:
+	docker compose -f docker-compose.production.yml exec app bash
+
+bash-staging:
+	docker compose -f docker-compose.staging.yml exec app bash
 
 migrate:
 	docker compose -f docker-compose.development.yml --env-file .env.development exec app rails db:migrate

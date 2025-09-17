@@ -28,8 +28,6 @@ fi
 # Garante que o diretório tmp/pids existe
 mkdir -p tmp/pids
 
-echo "✅ PostgreSQL já está pronto (garantido pelo depends_on)"
-
 # =============================================================================
 # DETECÇÃO E CRIAÇÃO DA APLICAÇÃO RAILS
 # =============================================================================
@@ -39,55 +37,16 @@ echo "✅ PostgreSQL já está pronto (garantido pelo depends_on)"
 if [ ! -f Gemfile ] || [ ! -d app ] || [ ! -f config/application.rb ]; then
   echo "📦 Inicializando aplicação Rails..."
 
-  if [ -f .dockerignore ]; then
-    echo "📄 Preservando .dockerignore existente..."
-    cp .dockerignore .dockerignore.backup
-  fi
-  
-  # Preserva .dockerignore e .dockerignore.runtime existentes
-  if [ -f .dockerignore.development ]; then
-    echo "📄 Preservando .dockerignore.development existente..."
-    cp .dockerignore.development .dockerignore.development.backup
-  fi
-  
-  if [ -f .dockerignore.runtime ]; then
-    echo "📄 Preservando .dockerignore.runtime existente..."
-    cp .dockerignore.runtime .dockerignore.runtime.backup
-  fi
-
   if [ -f .gitignore ]; then
     echo "📄 Preservando .gitignore existente..."
     cp .gitignore .gitignore.backup
   fi
 
   rails new . --api --database=postgresql --skip-bundle --force
-
-  if [ -f ".dockerignore" ]; then
-    echo "🧹 Removendo .dockerignore padrão..."
-    rm -f .dockerignore
-  fi
-
-  if [ -f .dockerignore.backup ]; then
-    echo "📄 Restaurando .dockerignore original..."
-    mv .dockerignore.backup .dockerignore
-  fi
-  
-  if [ -f .dockerignore.development.backup ]; then
-    echo "📄 Restaurando .dockerignore.development original..."
-    mv .dockerignore.development.backup .dockerignore.development
-  fi
-  
-  if [ -f .dockerignore.runtime.backup ]; then
-    echo "📄 Restaurando .dockerignore.runtime original..."
-    mv .dockerignore.runtime.backup .dockerignore.runtime
-  fi
   
   if [ -f .gitignore.backup ]; then
     echo "📄 Restaurando .gitignore original..."
     mv -f .gitignore.backup .gitignore
-  elif [ -f .project_gitignore ]; then
-    echo "📄 Usando .project_gitignore como .gitignore..."
-    cp -f .project_gitignore .gitignore
   fi
   
   # Gera configuração do banco
@@ -96,6 +55,11 @@ if [ ! -f Gemfile ] || [ ! -d app ] || [ ! -f config/application.rb ]; then
     ./generate_database_config.sh
   else
     echo "⚠️ Script de configuração não encontrado, usando configuração padrão"
+  fi
+
+  if [ -f .dockerignore.backup ]; then
+    echo "📄 Restaurando .dockerignore original..."
+    mv -f .dockerignore.backup .dockerignore
   fi
 
   if [ -f Dockerfile ]; then
@@ -116,8 +80,7 @@ fi
 echo "📦 Verificando dependências..."
 if [ -f Gemfile ]; then
   # Verifica se as dependências já estão instaladas
-  # Usa bundle check com --path para verificar se as gems estão no local correto
-  if bundle check --path=/usr/local/bundle > /dev/null 2>&1; then
+  if bundle check > /dev/null 2>&1; then
     echo "✅ Dependências já instaladas (cache aproveitado)"
   else
     echo "📦 Instalando dependências do Rails..."
@@ -150,7 +113,8 @@ if [ -f Gemfile ]; then
     echo "✅ Assets precompilados com sucesso!"
   fi
 else
-  echo "⚠️ Gemfile não encontrado, pulando instalação de dependências"
+  echo "❌ Gemfile não encontrado!"
+  exit 1
 fi
 
 echo "🗄️ Verificando se o banco de dados já existe..."

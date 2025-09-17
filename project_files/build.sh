@@ -39,24 +39,6 @@ fi
 echo "🚀 Iniciando build para ambiente: $ENVIRONMENT"
 
 # =============================================================================
-# CONFIGURAÇÃO DO DOCKERIGNORE
-# =============================================================================
-
-# Configura .dockerignore baseado no ambiente
-# Development: usa .dockerignore.development (otimizado para desenvolvimento)
-# Staging/Production: usa .dockerignore.runtime (otimizado para produção)
-if [ "$ENVIRONMENT" != "development" ]; then
-  echo "📝 Usando .dockerignore.runtime para $ENVIRONMENT"
-  cp -f .dockerignore.runtime .dockerignore
-else
-  echo "📝 Usando .dockerignore.development para desenvolvimento"
-  cp -f .dockerignore.development .dockerignore
-fi
-
-echo "✅ .dockerignore configurado para $ENVIRONMENT"
-echo "🐳 Iniciando build do Docker Compose..."
-
-# =============================================================================
 # EXECUÇÃO DO INIT.SH
 # =============================================================================
 
