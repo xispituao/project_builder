@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+      - gems_cache:/usr/local/bundle
     ports:
       - "${RAILS_PORT}:${RAILS_INTERNAL_PORT}"
     environment:
@@ -48,6 +49,8 @@ services:
 volumes:
   postgres_data:
     name: ${DB_VOLUME_NAME}
+  gems_cache:
+    name: ${GEMS_CACHE_VOLUME_NAME}
 
 networks:
   default:
