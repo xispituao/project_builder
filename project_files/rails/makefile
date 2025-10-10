@@ -1,5 +1,6 @@
 # Makefile para gerenciamento do projeto
 .DEFAULT_GOAL := up
+ENVIRONMENT ?= development
 
 # Alvos phony (nao sao arquivos)
 .PHONY: \
@@ -15,22 +16,16 @@
     test \
     swagger
 
-ifeq ($(ENVIRONMENT), production)
-up:
-	./up.sh production
-else ifeq ($(ENVIRONMENT), staging)
-up:
-	./up.sh staging
-else
-up:
-	./up.sh development
+ifeq ($(ENVIRONMENT), development)
 up-interactive:
-	./up.sh development --no-detach
+	./up.sh $(ENVIRONMENT) --no-detach
+endif
+up:
+	./up.sh $(ENVIRONMENT)
 test:
 	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rspec
 swagger:
 	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rake rswag:specs:swaggerize
-endif
 
 down:
 	docker compose -f docker-compose.yml --env-file .env down

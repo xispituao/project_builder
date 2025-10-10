@@ -26,7 +26,7 @@ WITHOUT=${2:-""}                     # gems to skip (padrão: vazio)
 INSTALL_OPTIONS=${3:-"--jobs 4 --retry 3"}  # install options (padrão: --jobs 4 --retry 3)
 
 echo "🧹 Removendo PID file antigo..."
-mkdir -p "./.tmp/pids" && rm -f "./.tmp/pids/server.pid"
+mkdir -p "./tmp/pids" && rm -f "./tmp/pids/server.pid"
 
 echo "📦 Verificando dependências..."
 

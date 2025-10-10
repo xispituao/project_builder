@@ -39,7 +39,7 @@ Template completo e automatizado para criar projetos modernos com Docker, suport
 
 ```bash
 # Sintaxe básica
-make build <nome_projeto> [caminho] [stack]
+make build <nome_projeto> [caminho=.] [stack=rails]
 
 # Exemplos - Rails
 make build blog                    # Cria projeto Rails "blog" no diretório atual
@@ -51,7 +51,7 @@ make build django_api ~/apps python   # Python/Django (futuro)
 make build node_api ~/apps node       # Node.js (futuro)
 
 # Com nome padrão
-make build                        # Cria "my_app" com stack rails
+make build                        # Cria "my_app" com stack rails no diretório ./
 ```
 
 ### Iniciar o Projeto
@@ -67,10 +67,12 @@ make up
 make up-interactive
 
 # Staging
-make up ENVIRONMENT=staging
+make up ENVIRONMENT=staging          # Define o ambiente explicitamente
+make up                               # Ou usa a variável ENVIRONMENT do servidor
 
 # Production
-make up ENVIRONMENT=production
+make up ENVIRONMENT=production       # Define o ambiente explicitamente
+make up                               # Ou usa a variável ENVIRONMENT do servidor
 ```
 
 ## 📂 Estrutura do Template Builder
