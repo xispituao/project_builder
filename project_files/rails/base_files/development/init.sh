@@ -18,7 +18,7 @@ echo "🚀 Iniciando ambiente: development"
 # Copia o arquivo .env template para .env
 cp -f "./base_files/development/.env" "./.env"
 
-./base_files/envs_validation.sh
+./base_files/envs_validation.sh POSTGRES_DB_TEST
 
 # Constrói as imagens Docker (sempre, mas com cache otimizado)
 ./base_files/run_container.sh development $DETACH

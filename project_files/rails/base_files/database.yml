@@ -4,24 +4,24 @@
 default: &default
   adapter: postgresql
   encoding: unicode
-  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
-  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
-  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
-  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
-  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "postgres" } %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") %>
+  host: <%= ENV.fetch("DB_HOST") %>
+  port: <%= ENV.fetch("DB_PORT") %>
+  username: <%= ENV.fetch("POSTGRES_USER") %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") %>
 
 development:
   <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_development" } %>
+  database: <%= ENV.fetch("POSTGRES_DB") %>
 
 test:
   <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB_TEST") { "{{PROJECT_NAME}}_test" } %>
+  database: <%= ENV.fetch("POSTGRES_DB_TEST", ENV.fetch("POSTGRES_DB")) %>
 
 staging:
   <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_staging" } %>
+  database: <%= ENV.fetch("POSTGRES_DB") %>
 
 production:
   <<: *default
-  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_production" } %>
+  database: <%= ENV.fetch("POSTGRES_DB") %>

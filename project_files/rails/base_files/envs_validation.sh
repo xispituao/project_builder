@@ -31,6 +31,7 @@ REQUIRED_VARS_BASE=(
   "POSTGRES_PASSWORD"
   "POSTGRES_DB"
   "RAILS_PORT"
+  "RAILS_MAX_THREADS"
 )
 
 # =============================================================================

@@ -25,7 +25,7 @@ RUN groupadd -r -g 1000 app_group && \
     useradd -r -u 1000 -g app_group -m app_user
 
 RUN mkdir -p /app /usr/local/bundle && \
-    chown -R app_group:app_user /app /usr/local/bundle
+    chown -R app_user:app_group /app /usr/local/bundle
 
 ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_PATH=/usr/local/bundle
@@ -38,7 +38,7 @@ WORKDIR /app
 RUN gem install rails -v 8.0.1 && \
     gem install bundler -v 2.5.6
 
-COPY --chown=app_group:app_user . .
+COPY --chown=app_user:app_group . .
 
 EXPOSE 3000
 

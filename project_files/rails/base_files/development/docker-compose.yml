@@ -10,11 +10,11 @@ services:
       - "${RAILS_PORT}:${RAILS_INTERNAL_PORT}"
     environment:
       - DB_HOST=${DB_HOST}
-      - DB_PORT=${DB_PORT}
-      - DB_INTERNAL_PORT=${DB_INTERNAL_PORT}
+      - DB_PORT=${DB_INTERNAL_PORT}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+      - RAILS_MAX_THREADS=${RAILS_MAX_THREADS}
     depends_on:
       db:
         condition: service_healthy

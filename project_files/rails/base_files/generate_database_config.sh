@@ -14,9 +14,8 @@ echo "🔧 Gerando configuração do banco de dados..."
 # VALIDAÇÃO DO TEMPLATE
 # =============================================================================
 
-# Verifica se o template existe em base_files/
-# (template é copiado pelo up.sh para a raiz do projeto)
-if [ ! -f "./base_files/database.yml" ]; then
+# Verifica se o template existe em ./base_files/
+if [ ! -e "./base_files/database.yml" ]; then
   echo "❌ Template database.yml não encontrado em ./base_files/!"
   exit 1
 fi
@@ -25,7 +24,7 @@ fi
 # SUBSTITUIÇÃO DO DATABASE.YML
 # =============================================================================
 
-# Move o template para config/database.yml (substitui configuração padrão)
-cp -f ./database.yml ../config/database.yml
+# Copia o template para config/database.yml (substitui configuração padrão)
+cp -f ./base_files/database.yml ./config/database.yml
 
 echo "✅ Configuração do banco gerada com sucesso!"
