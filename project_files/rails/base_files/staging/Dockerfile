@@ -6,16 +6,15 @@ RUN apt-get update -qq && \
     postgresql-client \
     libpq-dev \
     libyaml-dev \
-    git \
     curl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r -g 1000 avantsoft && \
-    useradd -r -u 1000 -g avantsoft -m avantsoft
+RUN groupadd -r -g 1000 app_group && \
+    useradd -r -u 1000 -g app_group -m app_user
 
-RUN mkdir -p /avantsoft_app /usr/local/bundle && \
-    chown -R avantsoft:avantsoft /avantsoft_app /usr/local/bundle
+RUN mkdir -p /app /usr/local/bundle && \
+    chown -R app_group:app_user /app /usr/local/bundle
 
 ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_PATH=/usr/local/bundle
@@ -23,13 +22,15 @@ ENV RAILS_ENV=staging
 ENV RAILS_SERVE_STATIC_FILES=true
 ENV RAILS_LOG_TO_STDOUT=true
 
-USER avantsoft
-WORKDIR /avantsoft_app
+USER app_user
+WORKDIR /app
 
 RUN gem install rails -v 8.0.1 && \
     gem install bundler -v 2.5.6
 
-COPY --chown=avantsoft:avantsoft . .
+COPY --chown=app_group:app_user . .
 
-ENTRYPOINT ["./entrypoint.sh"]
+EXPOSE 3000
+
+ENTRYPOINT ["sh", "./entrypoint.sh"]
 CMD ["sh", "-c", "rails server -b 0.0.0.0 -p ${RAILS_INTERNAL_PORT:-3000}"]

@@ -35,10 +35,19 @@
 
 # Ignore master key for decrypting credentials
 /config/master.key
+/config/credentials/*.key
 
 # Ignore database files (PostgreSQL)
 *.sqlite3
-*.sqlite3-journal
+*.sqlite3-*
+
+# Rails 7+ - Solid Queue, Cache, Cable
+/db/*.sqlite3
+/db/*.sqlite3-*
+
+# Propshaft/Importmap
+/app/assets/builds/*
+!/app/assets/builds/.keep
 
 # ===========================================
 # DOCKER SPECIFIC
@@ -49,21 +58,15 @@
 /postgres-data/
 /redis-data/
 
-# Docker override files
-docker-compose.override.yml
-.dockerignore.local
-
 # ===========================================
 # ENVIRONMENT & CONFIG
 # ===========================================
 
-# Environment files (keep .env.sample)
-.env
-.env.local
-.env.development
-.env.test
-.env.production
-.env.staging
+# Environment files apenas na raiz deste diretório
+# (permite .env em subdiretórios como development/, staging/, production/)
+/.env
+/.env.local
+/.env.*.local
 
 # ===========================================
 # DEVELOPMENT & TESTING
@@ -91,8 +94,6 @@ docker-compose.override.yml
 
 # Minitest
 /minitest-report.xml
-
-# SimpleCov (coverage already ignored above)
 
 # Test artifacts
 /test-reports/
@@ -125,11 +126,39 @@ yarn-error.log
 # IDE & EDITORS
 # ===========================================
 
-# VSCode (ignore user-specific settings)
-.vscode/settings.json
+# VSCode
+.vscode/
+!.vscode/extensions.json
+!.vscode/settings.json.sample
 
-# RubyMine
+# RubyMine / IntelliJ
 .idea/
+*.iml
+
+# Sublime Text
+*.sublime-workspace
+*.sublime-project
+
+# Vim / Neovim
+*.swp
+*.swo
+*~
+.vim/
+.nvim/
+
+# Emacs
+*~
+\#*\#
+.#*
+
+# Cursor
+.cursor/
+
+# Fleet
+.fleet/
+
+# Zed
+.zed/
 
 # ===========================================
 # OS SPECIFIC

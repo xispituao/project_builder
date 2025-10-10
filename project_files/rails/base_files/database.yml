@@ -1,0 +1,27 @@
+# PostgreSQL Configuration
+# See: https://guides.rubyonrails.org/configuring.html#configuring-a-database
+
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+  host: <%= ENV.fetch("DB_HOST") { "localhost" } %>
+  port: <%= ENV.fetch("DB_PORT") { 5432 } %>
+  username: <%= ENV.fetch("POSTGRES_USER") { "postgres" } %>
+  password: <%= ENV.fetch("POSTGRES_PASSWORD") { "postgres" } %>
+
+development:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_development" } %>
+
+test:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB_TEST") { "{{PROJECT_NAME}}_test" } %>
+
+staging:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_staging" } %>
+
+production:
+  <<: *default
+  database: <%= ENV.fetch("POSTGRES_DB") { "{{PROJECT_NAME}}_production" } %>

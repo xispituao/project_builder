@@ -1,12 +1,12 @@
 services:
   app:
+    container_name: --PROJECT_NAME--_staging_app
     build: 
       context: .
-      dockerfile: Dockerfile.staging
+      dockerfile: Dockerfile
     ports:
       - "${RAILS_PORT}:${RAILS_INTERNAL_PORT:-3000}"
     environment:
-      - RAILS_ENV=staging
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_INTERNAL_PORT=${DB_INTERNAL_PORT:-5432}
@@ -24,11 +24,12 @@ services:
       timeout: 10s
       retries: 10
       start_period: 30s
-    user: avantsoft
+    user: app_user
     restart: unless-stopped
 
   db:
     image: postgres:17.6-alpine
+    container_name: --PROJECT_NAME--_staging_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -47,3 +48,4 @@ services:
 
 volumes:
   postgres_data:
+    name: --PROJECT_NAME--_staging_postgres_data

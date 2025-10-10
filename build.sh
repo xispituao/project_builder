@@ -1,8 +1,9 @@
+#!/usr/bin/env bash
 # =============================================================================
 # Project Builder - Script Principal
 # =============================================================================
-# Este script é o ponto de entrada para criar novos projetos Rails
-# Funciona como um template que gera aplicações Rails completas com Docker
+# Este script é o ponto de entrada para criar novos projetos
+# Funciona como um template que gera aplicações completas com Docker
 # Suporta múltiplos ambientes: development, staging, production
 # =============================================================================
 
@@ -80,6 +81,15 @@ shopt -s extglob  # Ativa padrões estendidos para nomes de arquivos
 for file in ./project_files/$PROJECT_STACK/* ./project_files/$PROJECT_STACK/.*; do
   [ -e "$file" ] || continue  # Pula se o arquivo não existir
   cp -rf "$file" "$PROJECT_PATH/$PROJECT_NAME/"
+done
+
+# Substitui --PROJECT_NAME-- pelo nome do projeto em todos os ambientes
+echo "🔧 Configurando PROJECT_NAME nos docker-compose.yml..."
+for env in development staging production; do
+  compose_file="$PROJECT_PATH/$PROJECT_NAME/base_files/$env/docker-compose.yml"
+  if [ -f "$compose_file" ]; then
+    sed -i "s/--PROJECT_NAME--/${PROJECT_NAME}/g" "$compose_file"
+  fi
 done
 
 echo "✅ Arquivos copiados para dentro da pasta do projeto"

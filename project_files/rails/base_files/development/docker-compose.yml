@@ -1,34 +1,34 @@
 services:
   app:
+    container_name: --PROJECT_NAME--_development_app
     build: 
       context: .
-      dockerfile: Dockerfile.production
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app
     ports:
       - "${RAILS_PORT}:${RAILS_INTERNAL_PORT:-3000}"
     environment:
-      - RAILS_ENV=production
       - DB_HOST=${DB_HOST}
       - DB_PORT=${DB_PORT}
       - DB_INTERNAL_PORT=${DB_INTERNAL_PORT:-5432}
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
-      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
     depends_on:
       db:
         condition: service_healthy
-    # Usa CMD do Dockerfile
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:${RAILS_INTERNAL_PORT:-3000}"]
       interval: 30s
       timeout: 10s
       retries: 10
       start_period: 30s
-    user: avantsoft
-    restart: unless-stopped
+    user: app_user
 
   db:
     image: postgres:17.6-alpine
+    container_name: --PROJECT_NAME--_development_db
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -47,3 +47,4 @@ services:
 
 volumes:
   postgres_data:
+    name: --PROJECT_NAME--_development_postgres_data

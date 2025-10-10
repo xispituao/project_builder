@@ -6,9 +6,8 @@
 # Permitir apenas os arquivos presentes no diretório
 !project_files/
 !project_files/**
+!project_files/**/.*
 !.gitignore
 !build.sh
-!entrypoint.sh
-!init.sh
 !makefile
 !README.md
