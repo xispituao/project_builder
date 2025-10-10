@@ -33,21 +33,6 @@ Template completo e automatizado para criar projetos modernos com Docker, suport
 - API mode, Docker otimizado
 - Scripts modulares e reutilizáveis
 
-### 🔄 Python/Django (Em Desenvolvimento)
-- Python 3.12 + Django 5.0
-- PostgreSQL
-- Django REST Framework
-
-### 🔄 Node.js (Planejado)
-- Node.js 20 LTS
-- Express/NestJS
-- PostgreSQL/MongoDB
-
-### 🔄 Go (Planejado)
-- Go 1.21+
-- Fiber/Gin framework
-- PostgreSQL
-
 ## 🚀 Quick Start
 
 ### Criar um Novo Projeto
@@ -309,28 +294,6 @@ O projeto **sanitiza automaticamente** nomes de projeto:
 - ✅ Senhas fortes e diferentes
 - ✅ Validação obrigatória de variáveis
 
-## 🏗️ Arquitetura
-
-### Fluxo de Criação
-
-```
-1. make build → makefile raiz
-2. build.sh → Valida + Sanitiza + Cria estrutura
-3. Copia templates → Substitui placeholders
-4. Projeto pronto! ✅
-```
-
-### Fluxo de Execução (Development)
-
-```
-1. make up → makefile do projeto
-2. up.sh → Copia arquivos do ambiente
-3. init.sh → Gera .env + Valida variáveis
-4. run_container.sh → Build + Up containers
-5. entrypoint.sh → Rails new + Bundle + Migrate
-6. Rails server ✅
-```
-
 ### Scripts Modulares
 
 - ✅ **envs_validation.sh** - Validação de variáveis (reutilizável)
@@ -339,29 +302,18 @@ O projeto **sanitiza automaticamente** nomes de projeto:
 - ✅ **execute_migrations.sh** - Migrações com opção de verificação de BD
 - ✅ **generate_database_config.sh** - Geração de database.yml
 
-## 🐳 Docker
-
-### Imagens Otimizadas
-
-| Ambiente | Base | Tamanho Estimado | Gems | Assets | Otimizações |
-|----------|------|------------------|------|--------|-------------|
-| Development | ruby:3.4.2-slim | ~450-500MB | Todas (dev/test/prod) | Em runtime | Código via volume |
-| Staging | ruby:3.4.2-slim | ~420-450MB | Sem development | Precompilados | Bundle deployment |
-| Production | ruby:3.4.2-slim | ~400-430MB | Sem dev/test | Precompilados | Bundle deployment |
-
 **Otimizações Aplicadas:**
-- ✅ Sem git nos containers (~20MB economizado)
-- ✅ Limpeza de cache do apt (~30MB economizado)
-- ✅ Slim base image (~200MB menor que imagem completa)
-- ✅ Bundle without em staging/prod (~30-50MB economizado)
-- ✅ Usuário não-root (segurança)
-- ✅ Multi-stage não usado (preferência por simplicidade)
+- ✅ Sem git nos containers
+- ✅ Limpeza de cache do apt
+- ✅ Slim base image
+- ✅ Bundle without em staging/prod
+- ✅ Usuário não-root
 
-**Por que Development é maior:**
+**Características do ambiente de development:**
 - Contém gems de desenvolvimento e teste (rspec, byebug, etc)
 - Assets não precompilados (gerados dinamicamente)
 
-**Por que Production é menor:**
+**Características do ambiente de staging/production:**
 - Apenas gems essenciais para runtime
 - Assets precompilados durante build
 - Bundle em modo deployment (mais eficiente)
@@ -384,86 +336,6 @@ Projeto "api":
 ✅ Zero conflitos! Múltiplos projetos no mesmo servidor.
 ```
 
-## 📦 O Que É Instalado - Stack Rails
-
-### Sistema (Dockerfile)
-- build-essential
-- postgresql-client
-- libpq-dev, libyaml-dev
-- curl
-
-### Ruby/Rails (Dockerfile)
-- Ruby 3.4.2
-- Rails 8.0.1
-- Bundler 2.5.6
-
-### Rails (rails new)
-- API mode (--api)
-- PostgreSQL (--database=postgresql)
-- Sem git, sem bundle inicial, sem docker
-
-## 🔍 Troubleshooting
-
-### Problemas Comuns
-
-**Container não inicia:**
-```bash
-make logs          # Ver erros
-make clean         # Limpar tudo
-make up            # Tentar novamente
-```
-
-**Banco de dados com problemas:**
-```bash
-make clean         # Remove volumes
-make up            # Recria banco
-```
-
-**Porta já em uso:**
-```bash
-# Editar .env e mudar RAILS_PORT
-echo "RAILS_PORT=3001" >> .env
-make down
-make up
-```
-
-**Permissão negada (staging/production):**
-```bash
-chmod 600 .env
-make up ENVIRONMENT=production
-```
-
-### Banco de Dados Externo (Production)
-
-Para usar banco gerenciado (AWS RDS, etc):
-
-```bash
-# No .env do servidor
-DB_HOST=db.xyz.rds.amazonaws.com
-DB_PORT=5432
-POSTGRES_USER=admin
-POSTGRES_PASSWORD=senha_rds
-POSTGRES_DB=blog_production
-
-# Remover serviço "db" do docker-compose.yml
-# Manter apenas serviço "app"
-```
-
-## 📊 Status do Projeto
-
-| Componente | Status | Otimizado |
-|------------|--------|-----------|
-| **Sanitização de nomes** | ✅ | ✅ |
-| **Validação de variáveis** | ✅ | ✅ |
-| **Scripts modulares** | ✅ | ✅ |
-| **Dockerfiles** | ✅ | ✅ |
-| **docker-compose.yml** | ✅ | ✅ |
-| **Multi-ambiente** | ✅ | ✅ |
-| **Isolamento de projetos** | ✅ | ✅ |
-| **Sem git nos containers** | ✅ | ✅ |
-| **Comentários e documentação** | ✅ | ✅ |
-| **Sem erros de linting** | ✅ | ✅ |
-
 ## 🛠️ Customização
 
 ### Adicionar Gems
@@ -474,30 +346,12 @@ Edite `Gemfile` do projeto gerado e faça rebuild:
 # No projeto
 echo "gem 'devise'" >> Gemfile
 make down
-make build
 make up
-```
-
-### Adicionar Serviços (Redis, Sidekiq, etc)
-
-Edite `docker-compose.yml` do projeto:
-
-```yaml
-services:
-  app:
-    # ...
-  
-  db:
-    # ...
-  
-  redis:
-    image: redis:7-alpine
-    container_name: ${PROJECT_NAME}_redis
 ```
 
 ### Variáveis Personalizadas
 
-Adicione em `.env` e passe via `environment:` no docker-compose.yml:
+Adicione em `.env`(caso seja ambiente development edit o .env padrão dentro de base_files pois o .env na raiz do projeto é gerado automaticamente baseado nele) e passe via `environment:` no docker-compose.yml:
 
 ```yaml
 environment:
@@ -515,67 +369,26 @@ environment:
 ### Staging/Production
 - ⚠️ `.env` deve ser criado manualmente no servidor
 - ⚠️ `SECRET_KEY_BASE` obrigatório
-- ⚠️ Senhas reais (nunca commitar)
 - ✅ Validação automática de variáveis obrigatórias
 - ✅ Assets precompilados automaticamente
 
 ## 🎯 Roadmap
 
-### v1.2 (Próximo)
-- 🐍 **Stack Python/Django** - Template completo para Django
+### Próximo
 - 🟢 **Stack Node.js** - Template para Express/NestJS
 - ⚡ Redis integration (Rails)
-- 📊 Logs centralizados
 
-### v1.3 (Médio Prazo)
-- 🔷 **Stack Go** - Template para Fiber/Gin
+### Médio Prazo
+- 🐍 **Stack Python/Django** - Template completo para Django
 - 🗄️ Suporte a múltiplos bancos (MySQL, MongoDB)
 - 🔄 CI/CD templates (GitHub Actions, GitLab CI)
+- 📊 Logs centralizados
 
-### v2.0 (Futuro)
+### Futuro
 - 🐳 Kubernetes (k8s manifests para todas stacks)
 - 📱 Geração automática de API docs
 - 🔐 Secrets Manager integration
 - 🌐 Load balancing e auto-scaling
-
----
-
-## 💡 Dicas
-
-**Múltiplos projetos no mesmo servidor:**
-```bash
-# Cada projeto fica isolado
-make build blog ~/apps
-make build api ~/apps
-make build admin ~/apps
-
-cd ~/apps/blog && make up
-cd ~/apps/api && make up ENVIRONMENT=staging
-cd ~/apps/admin && make up ENVIRONMENT=production
-
-# Todos rodando simultaneamente sem conflitos! ✅
-```
-
-**GitHub/GitLab:**
-```bash
-# Git no host (não no container)
-cd blog
-git init
-git add .
-git commit -m "Initial commit"
-git push
-```
-
-**Backup de .env:**
-```bash
-# Criptografado
-gpg --encrypt .env > .env.gpg
-
-# Restaurar
-gpg --decrypt .env.gpg > .env
-chmod 600 .env
-```
-
 
 ## 📄 Licença
 
