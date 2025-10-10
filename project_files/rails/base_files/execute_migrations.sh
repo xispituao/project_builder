@@ -8,7 +8,7 @@
 #   ./execute_migrations.sh [check_db]
 #
 # Parâmetros:
-#   check_db: true ou false (padrão: true)
+#   check_db: true ou false (padrão: false)
 #     - true: Verifica se BD existe e cria se necessário
 #     - false: Pula verificação, apenas executa migrações
 #

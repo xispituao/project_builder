@@ -3,7 +3,11 @@
 # Project Builder - Script Principal
 # =============================================================================
 # Este script é o ponto de entrada para criar novos projetos
-# Funciona como um template que gera aplicações completas com Docker
+# Responsável por:
+# 1. Validar parâmetros (nome, caminho, stack)
+# 2. Criar estrutura de diretórios do projeto
+# 3. Copiar arquivos template da stack escolhida
+# 4. Substituir placeholders (--PROJECT_NAME--) pelos valores reais
 # Suporta múltiplos ambientes: development, staging, production
 # =============================================================================
 
@@ -35,6 +39,33 @@ PROJECT_STACK=${3}
 if [ -z "$PROJECT_NAME" ]; then
   echo "❌ Erro: Nome do projeto é obrigatório!"
   echo "💡 Uso: ./build.sh <nome_do_projeto> <caminho_do_projeto> <stack_do_projeto>"
+  exit 1
+fi
+
+# Sanitiza nome
+ORIGINAL_NAME="$PROJECT_NAME"
+PROJECT_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]')  # Minúsculas
+PROJECT_NAME=$(echo "$PROJECT_NAME" | sed 's/ /_/g')                # Espaços → _
+PROJECT_NAME=$(echo "$PROJECT_NAME" | sed 's/[^a-z0-9_-]//g')      # Remove especiais
+
+# Avisa se mudou
+if [ "$ORIGINAL_NAME" != "$PROJECT_NAME" ]; then
+  echo "ℹ️  Nome sanitizado: '$ORIGINAL_NAME' → '$PROJECT_NAME'"
+fi
+
+# Valida resultado
+if [ -z "$PROJECT_NAME" ]; then
+  echo "❌ Nome inválido (vazio após sanitização)!"
+  exit 1
+fi
+
+if [[ ! "$PROJECT_NAME" =~ ^[a-z] ]]; then
+  echo "❌ Nome deve começar com letra: $PROJECT_NAME"
+  exit 1
+fi
+
+if [ ${#PROJECT_NAME} -gt 50 ]; then
+  echo "❌ Nome muito longo (máx 50 chars): ${#PROJECT_NAME}"
   exit 1
 fi
 
@@ -83,14 +114,7 @@ for file in ./project_files/$PROJECT_STACK/* ./project_files/$PROJECT_STACK/.*; 
   cp -rf "$file" "$PROJECT_PATH/$PROJECT_NAME/"
 done
 
-# Substitui --PROJECT_NAME-- pelo nome do projeto em todos os ambientes
-echo "🔧 Configurando PROJECT_NAME nos docker-compose.yml..."
-for env in development staging production; do
-  compose_file="$PROJECT_PATH/$PROJECT_NAME/base_files/$env/docker-compose.yml"
-  if [ -f "$compose_file" ]; then
-    sed -i "s/--PROJECT_NAME--/${PROJECT_NAME}/g" "$compose_file"
-  fi
-done
+sed -i "s/--PROJECT_NAME--/${PROJECT_NAME}/g" "$PROJECT_PATH/$PROJECT_NAME/base_files/development/.env"
 
 echo "✅ Arquivos copiados para dentro da pasta do projeto"
 

@@ -1,5 +1,16 @@
+# =============================================================================
+# Dockerfile - Development
+# =============================================================================
+# Imagem Docker otimizada para ambiente de desenvolvimento Rails
+# - Ruby 3.4.2 (slim para menor tamanho)
+# - PostgreSQL client
+# - Usuário não-root para segurança
+# - Bundle configurado para development
+# =============================================================================
+
 FROM ruby:3.4.2-slim
 
+# Instala dependências do sistema
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     build-essential \

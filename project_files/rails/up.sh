@@ -4,7 +4,8 @@
 # =============================================================================
 # Responsável por:
 # 1. Verificar se o ambiente é suportado
-# 2. Executar up.sh de acordo com o ambiente e os parâmetros apropriados
+# 2. Copiar arquivos do ambiente específico
+# 3. Executar init.sh de acordo com o ambiente e os parâmetros apropriados
 # =============================================================================
 
 set -e  # Para execução em caso de erro

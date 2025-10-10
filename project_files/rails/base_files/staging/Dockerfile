@@ -1,5 +1,17 @@
+# =============================================================================
+# Dockerfile - Staging
+# =============================================================================
+# Imagem Docker otimizada para ambiente de staging
+# - Ruby 3.4.2 (slim para menor tamanho)
+# - PostgreSQL client
+# - Usuário não-root para segurança
+# - Assets precompilados
+# - Sem gems de development
+# =============================================================================
+
 FROM ruby:3.4.2-slim
 
+# Instala dependências do sistema
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     build-essential \

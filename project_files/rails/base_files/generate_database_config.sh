@@ -14,9 +14,10 @@ echo "🔧 Gerando configuração do banco de dados..."
 # VALIDAÇÃO DO TEMPLATE
 # =============================================================================
 
-# Verifica se o template existe
+# Verifica se o template existe em base_files/
+# (template é copiado pelo up.sh para a raiz do projeto)
 if [ ! -f "./base_files/database.yml" ]; then
-  echo "❌ Template database.yml não encontrado!"
+  echo "❌ Template database.yml não encontrado em ./base_files/!"
   exit 1
 fi
 

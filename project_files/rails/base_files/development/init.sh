@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # =============================================================================
-# Init Script
+# Init Script - Development
 # =============================================================================
 # Este script é responsável por:
-# 1. Copiar o arquivo .env.sample para .env
-# 2. Executar o script envs_validation.sh
-# 3. Executar o script run_container.sh
+# 1. Copiar arquivo .env template para raiz do projeto
+# 2. Validar variáveis de ambiente obrigatórias
+# 3. Executar run_container.sh para build e up dos containers
 # =============================================================================
 
 set -e  # Para execução em caso de erro
@@ -15,8 +15,8 @@ DETACH=${1:-"--detach"}       # Modo detach (--detach ou --no-detach)
 
 echo "🚀 Iniciando ambiente: development"
 
-# Copia o arquivo .env.sample para .env
-cp -f "./base_files/development/.env.sample" "./.env"
+# Copia o arquivo .env template para .env
+cp -f "./base_files/development/.env" "./.env"
 
 ./base_files/envs_validation.sh
 
