@@ -1,18 +1,19 @@
-# 🚀 Rails Project Builder
+# 🚀 Project Builder
 
-Template completo e automatizado para criar projetos Rails modernos com Docker e PostgreSQL, otimizado para desenvolvimento, staging e produção.
+Template completo e automatizado para criar projetos modernos com Docker, suportando múltiplas stacks (Rails, Python/Django, Node.js, etc), otimizado para desenvolvimento, staging e produção.
 
 > ✅ **Status**: Projeto 100% funcional, testado e otimizado.
 
 ## ✨ Características
 
+- 🚀 **Multi-Stack** - Rails (disponível), Python/Django, Node.js (em breve)
 - 🐳 **Totalmente Dockerizado** - Ambiente consistente e isolado
-- 🔧 **Auto-configuração** - Setup automático de Rails, PostgreSQL e dependências
+- 🔧 **Auto-configuração** - Setup automático por stack
 - 🛡️ **Multi-ambiente** - Development, staging e production configurados
-- 📦 **Zero Configuração Manual** - Cria projetos Rails do zero automaticamente
+- 📦 **Zero Configuração Manual** - Cria projetos do zero automaticamente
 - 🏗️ **Template Reutilizável** - Use para múltiplos projetos sem conflitos
 - 🔒 **Seguro** - Usuários não-root, sanitização de nomes, validação de variáveis
-- ⚡ **Otimizado** - Imagens Docker enxutas (~430MB), cache inteligente
+- ⚡ **Otimizado** - Imagens Docker enxutas, cache inteligente
 - 🎯 **Padronizado** - Nomes únicos para containers, volumes e networks
 
 ## 📋 Pré-requisitos
@@ -24,6 +25,29 @@ Template completo e automatizado para criar projetos Rails modernos com Docker e
 
 > ✅ **Testado em**: Ubuntu no WSL2, Windows 10
 
+## 📦 Stacks Disponíveis
+
+### ✅ Rails (Disponível)
+- **Ruby 3.4.2** + **Rails 8.0.1**
+- PostgreSQL 17.6
+- API mode, Docker otimizado
+- Scripts modulares e reutilizáveis
+
+### 🔄 Python/Django (Em Desenvolvimento)
+- Python 3.12 + Django 5.0
+- PostgreSQL
+- Django REST Framework
+
+### 🔄 Node.js (Planejado)
+- Node.js 20 LTS
+- Express/NestJS
+- PostgreSQL/MongoDB
+
+### 🔄 Go (Planejado)
+- Go 1.21+
+- Fiber/Gin framework
+- PostgreSQL
+
 ## 🚀 Quick Start
 
 ### Criar um Novo Projeto
@@ -32,13 +56,17 @@ Template completo e automatizado para criar projetos Rails modernos com Docker e
 # Sintaxe básica
 make build <nome_projeto> [caminho] [stack]
 
-# Exemplos
-make build blog                    # Cria "blog" no diretório atual
+# Exemplos - Rails
+make build blog                    # Cria projeto Rails "blog" no diretório atual
 make build meu_app ~/projetos     # Cria em ~/projetos/meu_app
-make build api ~/apps rails       # Especifica stack (rails é padrão)
+make build api ~/apps rails       # Especifica stack explicitamente
+
+# Futuramente - Outras stacks
+make build django_api ~/apps python   # Python/Django (futuro)
+make build node_api ~/apps node       # Node.js (futuro)
 
 # Com nome padrão
-make build                        # Cria "my_app" no diretório atual
+make build                        # Cria "my_app" com stack rails
 ```
 
 ### Iniciar o Projeto
@@ -60,10 +88,31 @@ make up ENVIRONMENT=staging
 make up ENVIRONMENT=production
 ```
 
-## 📂 Estrutura do Projeto Gerado
+## 📂 Estrutura do Template Builder
 
 ```
-blog/  (seu projeto)
+project_builder/  (template raiz)
+├── makefile                    # Build de novos projetos
+├── build.sh                    # Script principal de criação
+├── README.md                   # Documentação
+└── project_files/              # Templates por stack
+    ├── rails/                  ✅ Stack Rails (disponível)
+    │   ├── makefile
+    │   ├── up.sh
+    │   └── base_files/
+    │       ├── development/
+    │       ├── staging/
+    │       ├── production/
+    │       └── scripts auxiliares
+    ├── python/                 🔄 Stack Python (futuro)
+    ├── node/                   🔄 Stack Node.js (futuro)
+    └── go/                     🔄 Stack Go (futuro)
+```
+
+## 📂 Estrutura do Projeto Gerado (Rails)
+
+```
+blog/  (seu projeto Rails)
 ├── makefile                    # Comandos de gerenciamento
 ├── up.sh                       # Script de inicialização
 ├── .env                        # Variáveis de ambiente (gerado)
@@ -335,7 +384,7 @@ Projeto "api":
 ✅ Zero conflitos! Múltiplos projetos no mesmo servidor.
 ```
 
-## 📦 O Que É Instalado
+## 📦 O Que É Instalado - Stack Rails
 
 ### Sistema (Dockerfile)
 - build-essential
@@ -473,15 +522,21 @@ environment:
 ## 🎯 Roadmap
 
 ### v1.2 (Próximo)
-- 🗄️ Suporte a MySQL e outros bancos
-- ⚡ Template com Redis
+- 🐍 **Stack Python/Django** - Template completo para Django
+- 🟢 **Stack Node.js** - Template para Express/NestJS
+- ⚡ Redis integration (Rails)
 - 📊 Logs centralizados
 
-### v2.0 (Futuro)
-- 🐳 Kubernetes (k8s manifests)
+### v1.3 (Médio Prazo)
+- 🔷 **Stack Go** - Template para Fiber/Gin
+- 🗄️ Suporte a múltiplos bancos (MySQL, MongoDB)
 - 🔄 CI/CD templates (GitHub Actions, GitLab CI)
+
+### v2.0 (Futuro)
+- 🐳 Kubernetes (k8s manifests para todas stacks)
 - 📱 Geração automática de API docs
 - 🔐 Secrets Manager integration
+- 🌐 Load balancing e auto-scaling
 
 ---
 
@@ -521,9 +576,6 @@ gpg --decrypt .env.gpg > .env
 chmod 600 .env
 ```
 
----
-
-> 🚀 **Pronto para produção!** Template completo, testado e otimizado para criar projetos Rails profissionais em minutos.
 
 ## 📄 Licença
 

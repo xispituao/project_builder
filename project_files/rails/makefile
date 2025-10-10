@@ -26,6 +26,10 @@ up:
 	./up.sh development
 up-interactive:
 	./up.sh development --no-detach
+test:
+	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rspec
+swagger:
+	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rake rswag:specs:swaggerize
 endif
 
 down:
@@ -42,7 +46,3 @@ clean:
 	docker compose -f docker-compose.yml --env-file .env down -v
 build:
 	docker compose -f docker-compose.yml --env-file .env build
-test:
-	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rspec
-swagger:
-	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rake rswag:specs:swaggerize

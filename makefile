@@ -1,7 +1,8 @@
 # =============================================================================
-# Rails Project Builder - Makefile
+# Project Builder - Makefile
 # =============================================================================
-# Este makefile fornece o comando de build para criar projetos Rails
+# Este makefile fornece o comando de build para criar projetos
+# Suporta múltiplas stacks: Rails (disponível), Python, Node.js (futuro)
 # =============================================================================
 
 # O alvo padrão é o build
