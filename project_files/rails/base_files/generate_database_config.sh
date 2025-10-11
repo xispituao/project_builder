@@ -24,7 +24,10 @@ fi
 # SUBSTITUIÇÃO DO DATABASE.YML
 # =============================================================================
 
-# Copia o template para config/database.yml (substitui configuração padrão)
-cp -f ./base_files/database.yml ./config/database.yml
+# Remove arquivo existente para evitar problemas de permissão (especialmente no CI)
+rm -f ./config/database.yml
+
+# Cria novo arquivo com o template
+cat ./base_files/database.yml > ./config/database.yml
 
 echo "✅ Configuração do banco gerada com sucesso!"

@@ -1,16 +1,5 @@
-# =============================================================================
-# Dockerfile - Development
-# =============================================================================
-# Imagem Docker otimizada para ambiente de desenvolvimento Rails
-# - Ruby 3.4.2 (slim para menor tamanho)
-# - PostgreSQL client
-# - Usuário não-root para segurança
-# - Bundle configurado para development
-# =============================================================================
-
 FROM ruby:3.4.2-slim
 
-# Instala dependências do sistema
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     build-essential \
@@ -21,24 +10,19 @@ RUN apt-get update -qq && \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN groupadd -r -g 1000 app_group && \
-    useradd -r -u 1000 -g app_group -m app_user
-
-RUN mkdir -p /app /usr/local/bundle && \
-    chown -R app_user:app_group /app /usr/local/bundle
+RUN mkdir -p /app /usr/local/bundle
 
 ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_PATH=/usr/local/bundle
 ENV RAILS_ENV=development
 ENV RAILS_LOG_TO_STDOUT=true
 
-USER app_user
-WORKDIR /app
-
 RUN gem install rails -v 8.0.1 && \
     gem install bundler -v 2.5.6
 
-COPY --chown=app_user:app_group . .
+WORKDIR /app
+
+COPY . .
 
 EXPOSE 3000
 

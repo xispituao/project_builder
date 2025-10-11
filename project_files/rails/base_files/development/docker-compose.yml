@@ -25,7 +25,6 @@ services:
       timeout: 10s
       retries: 10
       start_period: 30s
-    user: app_user
 
   db:
     image: postgres:17.6-alpine

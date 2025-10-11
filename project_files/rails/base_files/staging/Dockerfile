@@ -1,25 +1,29 @@
-# =============================================================================
-# Dockerfile - Staging
-# =============================================================================
-# Imagem Docker otimizada para ambiente de staging
-# - Ruby 3.4.2 (slim para menor tamanho)
-# - PostgreSQL client
-# - Usuário não-root para segurança
-# - Assets precompilados
-# - Sem gems de development
-# =============================================================================
+FROM ruby:3.4.2-slim AS builder
 
-FROM ruby:3.4.2-slim
-
-# Instala dependências do sistema
 RUN apt-get update -qq && \
     apt-get install -y --no-install-recommends \
     build-essential \
-    postgresql-client \
     libpq-dev \
     libyaml-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV GEM_HOME=/usr/local/bundle
+ENV BUNDLE_PATH=/usr/local/bundle
+
+WORKDIR /app
+
+COPY Gemfile Gemfile.lock ./
+
+RUN bundle config set --local deployment 'true' && \
+    bundle config set --local without 'development test' && \
+    bundle install --jobs 4 --retry 3
+
+FROM ruby:3.4.2-slim
+
+RUN apt-get update -qq && \
+    apt-get install -y --no-install-recommends \
+    postgresql-client \
     curl \
-    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd -r -g 1000 app_group && \
@@ -30,15 +34,14 @@ RUN mkdir -p /app /usr/local/bundle && \
 
 ENV GEM_HOME=/usr/local/bundle
 ENV BUNDLE_PATH=/usr/local/bundle
-ENV RAILS_ENV=staging
+ENV RAILS_ENV=production
 ENV RAILS_SERVE_STATIC_FILES=true
 ENV RAILS_LOG_TO_STDOUT=true
 
+COPY --from=builder --chown=app_user:app_group /usr/local/bundle /usr/local/bundle
+
 USER app_user
 WORKDIR /app
-
-RUN gem install rails -v 8.0.1 && \
-    gem install bundler -v 2.5.6
 
 COPY --chown=app_user:app_group . .
 
