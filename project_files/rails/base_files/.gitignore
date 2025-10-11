@@ -11,21 +11,23 @@
 
 # Ignore all logfiles and tempfiles
 /log/*
-/tmp/*
 !/log/.keep
-!/tmp/.keep
 
-# Ignore pidfiles, but keep the directory
-/tmp/pids/*
+# Ignore tmp directory content but keep structure
+/tmp/*
+!/tmp/.keep
 !/tmp/pids/
 !/tmp/pids/.keep
+!/tmp/storage/
+!/tmp/storage/.keep
+/tmp/pids/*
+!/tmp/pids/.keep
+/tmp/storage/*
+!/tmp/storage/.keep
 
 # Ignore storage (uploaded files in development)
 /storage/*
 !/storage/.keep
-/tmp/storage/*
-!/tmp/storage/
-!/tmp/storage/.keep
 
 # Ignore public assets
 /public/assets

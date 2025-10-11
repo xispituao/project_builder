@@ -34,5 +34,14 @@ fi
 
 # Copia os arquivos necessários de acordo com o ambiente
 cp -rf ./base_files/$ENVIRONMENT/. .
+cp -rf ./base_files/.gitignore .
+
+# =============================================================================
+# INICIALIZAÇÃO DO GIT
+# =============================================================================
+
+if [ ! -d ".git" ]; then
+  git init -q
+fi
 
 ./init.sh "$DETACH"
