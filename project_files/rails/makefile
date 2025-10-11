@@ -7,6 +7,7 @@ ENVIRONMENT ?= development
     up \
     up-interactive \
     down \
+    restart \
     logs \
     console \
     bash \
@@ -14,6 +15,9 @@ ENVIRONMENT ?= development
     clean \
     build \
     test \
+    rubocop \
+    rubocop-fix \
+    brakeman \
     swagger
 
 ifeq ($(ENVIRONMENT), development)
@@ -24,11 +28,10 @@ up:
 	./up.sh $(ENVIRONMENT)
 test:
 	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rspec
-swagger:
-	docker compose -f docker-compose.yml --env-file .env exec app bundle exec rake rswag:specs:swaggerize
-
 down:
 	docker compose -f docker-compose.yml --env-file .env down
+restart:
+	docker compose -f docker-compose.yml --env-file .env restart app
 logs:
 	docker compose -f docker-compose.yml --env-file .env logs -f app
 console:
